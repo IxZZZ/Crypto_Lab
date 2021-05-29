@@ -30,12 +30,27 @@ Version	10.0.19042 Build 19042
 | AES | EBC | 128| n.a| 27|18 | | |
 | AES | EBC | 192| n.a| | 29|16 | |
 | AES | EBC | 256| n.a| 35|19 | | |
-| AES | CBC CTS| | 128| | | | |
-| AES | CBC CTS| | 128| 128| | | |
-| AES | CBC CTS| |128 |128 | | | |
-| AES | CBC | | 128| 128| | | |
-| AES | CBC | | 128| 128| | | |
-| AES | CBC | | 128|128 | | | |
+| AES | CBC CTS|128 | 128| 37|23 | | |
+| AES | CBC CTS|192 | 128|38 |23 | | |
+| AES | CBC CTS| 256|128 | 39|24 | | |
+| AES | CFB |128| 128| 35| 22| | |
+| AES | CFB |192| 128| 36|26 | | |
+| AES | CFB |256|128 | 40| 16| | |
+| AES | CTR |128| 128| 32| 25| | |
+| AES | CTR |192| 128| 30|23 | | |
+| AES | CTR |256|128 | 34|27 | | |
+| AES | OFB |128| 128|37 |28 | | |
+| AES | OFB |192| 128| 40|29 | | |
+| AES | OFB |256|128 |44 | 31| | |
+| AES | XTS |256| 128|41 |27 | | |
+| AES | XTS |348| 128|40 | 26| | |
+| AES | XTS |512|128 | 40|28 | | |
+| AES | GCM |128| 1000| 33| 46| | |
+| AES | GCM |192| 128| 24| 46| | |
+| AES | GCM |256|128 |28 |48 | | |
+| AES | CCM |128| 10|36 |53 | | |
+| AES | CCM |192| 10| 52|87 | | |
+| AES | CCM |256|10 | 45|54 | | |
 
 ### DES with cryptopp library
 
@@ -169,5 +184,3 @@ Version	10.0.19042 Build 19042
 
 -> 256 bits key
 ![image](https://user-images.githubusercontent.com/31529599/120057882-effae700-c070-11eb-973c-808634ec953b.png)
-
-
