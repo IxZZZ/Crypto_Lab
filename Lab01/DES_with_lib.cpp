@@ -8,9 +8,16 @@ using CryptoPP::AutoSeededRandomPool;
 #include <iomanip>
 
 #include <iostream>
+
 // library for unicode in C++
-#include <fcntl.h> //_O_WTEXT
-#include <io.h>	   //_setmode()
+/* Vietnamese support */
+/* Set _setmode()*/
+#ifdef _WIN32
+#include <io.h>
+#include <fcntl.h>
+#else
+#endif
+
 #include <string>
 #include <locale>
 #include <codecvt>
@@ -911,9 +918,14 @@ byte *iv_selection()
 int main(int argc, char *argv[])
 {
 
-	_setmode(_fileno(stdout), _O_WTEXT); //needed for output unicode
-	_setmode(_fileno(stdin), _O_WTEXT);	 //needed for input unicode
-
+	/*Set mode support Vietnamese*/
+	#ifdef __linux__
+		setlocale(LC_ALL, "");
+	#elif _WIN32
+		_setmode(_fileno(stdin), _O_U16TEXT);
+		_setmode(_fileno(stdout), _O_U16TEXT);
+	#else
+	#endif
 	// set default plaintext
 	std::wstring wplaintext = L"Welcome to the DES encryption and decryption!";
 	wcout << "[+] Enter plaintext: ";

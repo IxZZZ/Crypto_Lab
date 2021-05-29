@@ -9,9 +9,16 @@ using CryptoPP::AutoSeededRandomPool;
 
 #include <iostream>
 #include "assert.h"
+
 // library for unicode in C++
-#include <fcntl.h> //_O_WTEXT
-#include <io.h>    //_setmode()
+/* Vietnamese support */
+/* Set _setmode()*/
+#ifdef _WIN32
+#include <io.h>
+#include <fcntl.h>
+#else
+#endif
+
 #include <string>
 #include <locale>
 #include <codecvt>
@@ -1401,9 +1408,14 @@ byte *iv_selection(int mode, unsigned int &iv_length)
 }
 int main(int argc, char *argv[])
 {
-
-    _setmode(_fileno(stdout), _O_WTEXT); //needed for output unicode
-    _setmode(_fileno(stdin), _O_WTEXT);  //needed for input unicode
+/*Set mode support Vietnamese*/
+#ifdef __linux__
+    setlocale(LC_ALL, "");
+#elif _WIN32
+    _setmode(_fileno(stdin), _O_U16TEXT);
+    _setmode(_fileno(stdout), _O_U16TEXT);
+#else
+#endif
 
     // set default plaintext
     std::wstring wplaintext = L"Welcome to the AES encryption and decryption!";
@@ -1465,8 +1477,9 @@ int main(int argc, char *argv[])
     // input authentication data for authentication mode
     if (mode_option == 8 || mode_option == 9)
     {
-        fflush(stdin);
+
         wcout << "\n[+] Enter authentication data: ";
+        fflush(stdin);
         std::getline(wcin, w_adata);
 
         // convert wstring(utf8) to string
