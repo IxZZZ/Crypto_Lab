@@ -33,8 +33,16 @@ using CryptoPP::HexDecoder;
 using CryptoPP::HexEncoder;
 
 #include "cryptopp/filters.h"
+using CryptoPP::Redirector;
 using CryptoPP::StreamTransformationFilter;
 using CryptoPP::StringSink;
+
+#include <cryptopp/files.h>
+using CryptoPP::BufferedTransformation;
+using CryptoPP::FileSink;
+using CryptoPP::FileSource;
+
+using CryptoPP::FileSource;
 using CryptoPP::StringSource;
 
 #include "cryptopp/des.h"
@@ -83,7 +91,7 @@ double CBC_DES_Encrypt(string plain, byte *iv, SecByteBlock key, string &cipher)
 	catch (const CryptoPP::Exception &e)
 	{
 		// show any exception when catched
-		// cerr << e.what() << " here "<<endl;
+		cerr << e.what() << endl;
 		exit(1);
 	}
 
@@ -123,7 +131,7 @@ double CBC_DES_Decrypt(string cipher, byte *iv, SecByteBlock key, string &recove
 	catch (const CryptoPP::Exception &e)
 	{
 		// show any exception when catched
-		// cerr << e.what() <<"hehe"<< endl;
+		cerr << e.what() << endl;
 		exit(1);
 	}
 
@@ -242,7 +250,7 @@ double CBC_CTS_DES_Encrypt(string plain, byte *iv, SecByteBlock key, string &cip
 	catch (const CryptoPP::Exception &e)
 	{
 		// show any exception when catched
-		// cerr << e.what() << endl;
+		cerr << e.what() << endl;
 		exit(1);
 	}
 
@@ -552,8 +560,9 @@ void show_result(SecByteBlock key, byte *iv, int iv_length, string ciphertext, s
 					 new HexEncoder(
 						 new StringSink(encoded)) // HexEncoder
 		);
-		// show iv in hex format									  // StringSource
-		wcout << "iv: " << encoded.c_str() << endl;
+		// show iv in hex format
+		// StringSource
+		wcout << "iv:  " << encoded.c_str() << endl;
 	}
 
 	// clear encoded
@@ -563,6 +572,7 @@ void show_result(SecByteBlock key, byte *iv, int iv_length, string ciphertext, s
 				 new HexEncoder(
 					 new StringSink(encoded)) // HexEncoder
 	);										  // StringSource
+
 	// show cipher text in hex format
 	wcout << "Cipher text: " << encoded.c_str() << endl;
 	double ex_time_encrypt = total_time_encrypt / 10000; // Average execution time of 10.000 encryption running
@@ -580,8 +590,323 @@ void show_result(SecByteBlock key, byte *iv, int iv_length, string ciphertext, s
 
 	// show decode message
 	// show decode message and convert to utf16
-	std::wstring str = std::wstring_convert<std::codecvt_utf16<wchar_t>>().from_bytes(recovered);
+	std::wstring str = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(recovered);
 	wcout << "Recoverd text: " << str << endl;
+}
+
+double Estimation_En_De_cypt_Operation(string &plain, byte *iv, SecByteBlock key, string &cipher, int mode, bool is_decryption, int loop)
+{
+	double total_time = 0;
+	while (loop--)
+	{
+
+		// Compute total time for encryption
+		switch (mode)
+		{
+		case 1:
+			// ECB mode
+			if (!is_decryption)
+			{
+				total_time += ECB_DES_Encrypt(plain, key, cipher);
+			}
+			else
+			{
+				total_time += ECB_DES_Decrypt(cipher, key, plain);
+			}
+			break;
+		case 2:
+			// CBC mode
+			if (!is_decryption)
+			{
+				total_time += CBC_DES_Encrypt(plain, iv, key, cipher);
+			}
+			else
+			{
+				total_time += CBC_DES_Decrypt(cipher, iv, key, plain);
+			}
+			break;
+		case 3:
+			// CBC CTS mode
+			if (!is_decryption)
+			{
+				total_time += CBC_CTS_DES_Encrypt(plain, iv, key, cipher);
+			}
+			else
+			{
+				total_time += CBC_CTS_DES_Decrypt(cipher, iv, key, plain);
+			}
+			break;
+		case 4:
+			// CFB mode
+			if (!is_decryption)
+			{
+				total_time += CFB_DES_Encrypt(plain, iv, key, cipher);
+			}
+			else
+			{
+
+				total_time += CFB_DES_Decrypt(cipher, iv, key, plain);
+			}
+			break;
+		case 5:
+			// CTR mode
+			if (!is_decryption)
+			{
+
+				total_time += CTR_DES_Encrypt(plain, iv, key, cipher);
+			}
+			else
+			{
+				total_time += CTR_DES_Decrypt(cipher, iv, key, plain);
+			}
+			break;
+		case 6:
+			// OFB mode
+			if (!is_decryption)
+			{
+
+				total_time += OFB_DES_Encrypt(plain, iv, key, cipher);
+			}
+			else
+			{
+				total_time += OFB_DES_Decrypt(cipher, iv, key, plain);
+			}
+			break;
+		default:
+			break;
+		}
+
+		// save the ciphertext to show for the last loop
+		if (loop == 0)
+		{
+			break;
+		}
+		if (!is_decryption)
+		{
+			cipher.clear();
+		}
+		else
+		{
+			plain.clear();
+		}
+	}
+	return total_time;
+}
+SecByteBlock input_key_from_keyboard()
+{
+	std::wstring key_input;
+	string input = "";
+	do
+	{
+		wcout << "Input key: ";
+		// flush all buffet before getline
+		fflush(stdin);
+		std::getline(wcin, key_input);
+
+		// convert wstring (utf8) to string (asciij)
+		input = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(key_input);
+
+		if (input.length() != 8)
+		{
+			// repeat input until get correct key
+			wcout << "Wrong key length input. Key length must be 8 bytes!\n";
+		}
+		else
+		{
+			break;
+		}
+
+	} while (1);
+
+	SecByteBlock key(DES::DEFAULT_KEYLENGTH);
+	// convert ASCII to byte and store in key
+	for (int i = 0; i < DES::DEFAULT_KEYLENGTH; i++)
+	{
+		key[i] = (unsigned int)input[i];
+	}
+
+	return key;
+}
+
+// input bytes key
+SecByteBlock key_selection()
+{
+
+	SecByteBlock key(DES::DEFAULT_KEYLENGTH);
+
+	int option_input_key = 0;
+	do
+	{
+		wcout << endl;
+		wcout << "[+] Key selection:\n";
+		wcout << "1 - input key from keyboard\n";
+		wcout << "2 - input key from file\n";
+		wcout << "3 - generate a ramdom key\n";
+		wcout << "Enter option: ";
+		wcin >> option_input_key;
+		if (option_input_key >= 1 && option_input_key <= 3)
+		{
+			break;
+		}
+		else
+		{
+			// repeat until get correct input option
+			wcout << "Wrong input.\n";
+		}
+	} while (1);
+
+	switch (option_input_key)
+	{
+	case 1:
+	{
+		key = input_key_from_keyboard();
+		break;
+	}
+	case 2:
+	{
+		// reading key from file
+		try
+		{
+			FileSource fs("DES_key.key", false);
+			// create space for key
+			CryptoPP::ArraySink copykey(key, key.size());
+			//copy data from DES_key.key to key
+			fs.Detach(new Redirector(copykey));
+			fs.Pump(DES::DEFAULT_KEYLENGTH);
+		}
+		catch (CryptoPP::Exception e)
+		{
+			string error = e.GetWhat();
+			// print out exception when not found key file
+			std::wstring str = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(error);
+			wcout << str << endl;
+			exit(0);
+		}
+		break;
+	}
+	case 3:
+	{
+		AutoSeededRandomPool prng;
+		// generate a random bytes key
+		prng.GenerateBlock(key, DES::DEFAULT_KEYLENGTH);
+		break;
+	}
+	}
+	if (option_input_key != 2)
+	{
+		// save the key to file
+		StringSource ss(key, key.size(), true, new FileSink("DES_key.key"));
+		wcout << "Key has been save to DES_key.key" << endl;
+	}
+	return key;
+}
+
+// enter iv from key board
+byte *input_iv_from_keyboard()
+{
+	std::wstring iv_input;
+	string input = "";
+	do
+	{
+		wcout << "Input iv: ";
+		// flush all buffer before getline
+		fflush(stdin);
+		std::getline(wcin, iv_input);
+		// convert wstring(utf8) to string (ascii)
+		input = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(iv_input);
+
+		if (input.length() != DES::BLOCKSIZE)
+		{
+			wcout << "Wrong iv length input. iv length must be 8 bytes!\n";
+		}
+		else
+		{
+			break;
+		}
+	} while (1);
+	byte *iv = new byte[DES::BLOCKSIZE];
+
+	// convert ascii input to byte then store in iv
+	for (int i = 0; i < DES::BLOCKSIZE; i++)
+	{
+		iv[i] = (unsigned int)input[i];
+	}
+	return iv;
+}
+
+// iv selection
+byte *iv_selection()
+{
+	byte *iv;
+	int option_input_iv = 0;
+	do
+	{
+		wcout << endl;
+		wcout << "[+] IV selection:\n";
+		wcout << "1 - input iv from keyboard\n";
+		wcout << "2 - input iv from file\n";
+		wcout << "3 - generate a ramdom iv\n";
+		wcout << "Enter option: ";
+		wcin >> option_input_iv;
+
+		if (option_input_iv >= 1 && option_input_iv <= 3)
+		{
+			break;
+		}
+		else
+		{
+			// repeat input until get correct option
+			wcout << "Wrong input.\n";
+		}
+	} while (1);
+
+	switch (option_input_iv)
+	{
+	case 1:
+	{
+		iv = input_iv_from_keyboard();
+		break;
+	}
+	case 2:
+	{
+		// reading key from file
+		try
+		{
+			iv = new byte[DES::BLOCKSIZE];
+			FileSource fs("DES_iv.iv", false);
+			// create space for key
+			CryptoPP::ArraySink copykey(iv, DES::BLOCKSIZE);
+			//copy data from DES_key.key to key
+			fs.Detach(new Redirector(copykey));
+			fs.Pump(DES::DEFAULT_KEYLENGTH);
+		}
+		catch (CryptoPP::Exception e)
+		{
+			string error = e.GetWhat();
+			// print out exception  and exit
+			std::wstring str = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(error);
+			wcout << str << endl;
+			exit(0);
+		}
+		break;
+	}
+	case 3:
+	{
+		iv = new byte[DES::KEYLENGTH];
+		AutoSeededRandomPool prng;
+		// generate random bytes key
+		prng.GenerateBlock(iv, DES::DEFAULT_KEYLENGTH);
+		break;
+	}
+	}
+
+	if (option_input_iv != 2)
+	{
+		// store key to file
+		StringSource ss(iv, DES::BLOCKSIZE, true, new FileSink("DES_iv.iv"));
+		wcout << "iv has been saved to DES_iv.iv" << endl;
+	}
+	return iv;
 }
 int main(int argc, char *argv[])
 {
@@ -590,135 +915,78 @@ int main(int argc, char *argv[])
 	_setmode(_fileno(stdin), _O_WTEXT);	 //needed for input unicode
 
 	// set default plaintext
-	std::wstring wplaintext = L"Welcome to the AES encryption and decryption!";
-	wcout << "Enter plaintext: ";
+	std::wstring wplaintext = L"Welcome to the DES encryption and decryption!";
+	wcout << "[+] Enter plaintext: ";
 	std::getline(wcin, wplaintext);
 
+	// random byte
+	AutoSeededRandomPool prng;
+	// key initiattion
+	SecByteBlock key(DES::DEFAULT_KEYLENGTH);
+
+	byte *iv;
+
+	int mode_option = 0;
+
+	// Select operation mode
+	do
+	{
+		wcout << endl;
+		wcout << "[+] Select operation mode: \n";
+		wcout << "1 - EBC mode\n";
+		wcout << "2 - CBC mode\n";
+		wcout << "3 - CBC CTS mode\n";
+		wcout << "4 - CFB mode\n";
+		wcout << "5 - CTR mode\n";
+		wcout << "6 - OFB mode\n";
+		wcout << "Enter selection (1-6): ";
+
+		wcin >> mode_option;
+		if (mode_option < 1 || mode_option > 6)
+		{
+			wcout << "Input wrong options!\n";
+		}
+		else
+		{
+			break;
+		}
+	} while (1);
+
+	key = key_selection();
+
+	// not set iv for ECB mode
+	if (mode_option != 1)
+	{
+		iv = iv_selection();
+	}
+	else
+	{
+		iv = NULL;
+	}
 	// convert input in utf16 to string
-	string plaintext = std::wstring_convert<std::codecvt_utf16<wchar_t>>().to_bytes(wplaintext);
+	string plaintext = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(wplaintext);
 
 	// initiate ciphertext, encoded for key in hex format, recoverd is decryption message in hex format
-	string ciphertext_ECB_mode, recovered_ECB_mode, ciphertext_CBC_mode, recovered_CBC_mode,
-		ciphertext_CFB_mode, recovered_CFB_mode, ciphertext_CBC_CTS_mode, recovered_CBC_CTS_mode,
-		ciphertext_CTR_mode, recovered_CTR_mode, ciphertext_OFB_mode, recovered_OFB_mode;
+
+	string ciphertext, recovered;
 
 	// initiate for time variable
 	// Total time for 10.000 encryption running
-	double total_time_encrypt_ECB_mode = 0, total_time_encrypt_CBC_mode = 0, total_time_encrypt_CFB_mode = 0, total_time_encrypt_CBC_CTS_mode = 0,
-		   total_time_encrypt_CTR_mode = 0, total_time_encrypt_OFB_mode = 0,
+	double total_time_encrypt = 0;
 
-		   // Total time for 10.000 decryption running
-		total_time_decrypt_ECB_mode = 0, total_time_decrypt_CBC_mode = 0, total_time_decrypt_CFB_mode = 0, total_time_decrypt_CBC_CTS_mode = 0,
-		   total_time_decrypt_CTR_mode = 0, total_time_decrypt_OFB_mode = 0;
+	// Total time for 10.000 decryption running
+	double total_time_decrypt = 0;
 	// initiate start time
 
 	// loop for 10.000 operation
 	int loop = 10000;
-	AutoSeededRandomPool prng;
-	SecByteBlock key(DES::DEFAULT_KEYLENGTH);
-	byte iv[DES::BLOCKSIZE];
+	total_time_encrypt = Estimation_En_De_cypt_Operation(plaintext, iv, key, ciphertext, mode_option, 0, loop);
 
-	while (loop--)
-	{
-		// set start time for encrypting operation
+	total_time_decrypt = Estimation_En_De_cypt_Operation(recovered, iv, key, ciphertext, mode_option, 1, loop);
 
-		// generate key with default key size, the different key for each loop
-		prng.GenerateBlock(key, key.size());
-
-		// initital vector
-		// generate initial vector for CBC mode
-		prng.GenerateBlock(iv, sizeof(iv));
-
-		// Compute total time for encryption
-		// CBC mode
-		total_time_encrypt_CBC_mode += CBC_DES_Encrypt(plaintext, iv, key, ciphertext_CBC_mode);
-
-		//ECB mode
-		total_time_encrypt_ECB_mode += ECB_DES_Encrypt(plaintext, key, ciphertext_ECB_mode);
-
-		// CBC-CTS mode
-		total_time_encrypt_CBC_CTS_mode += CBC_CTS_DES_Encrypt(plaintext, iv, key, ciphertext_CBC_CTS_mode);
-
-		// CFB mode
-		total_time_encrypt_CFB_mode += CFB_DES_Encrypt(plaintext, iv, key, ciphertext_CFB_mode);
-
-		// CTR mode
-		total_time_encrypt_CTR_mode += CTR_DES_Encrypt(plaintext, iv, key, ciphertext_CTR_mode);
-
-		// OFB mode
-		total_time_encrypt_OFB_mode += OFB_DES_Encrypt(plaintext, iv, key, ciphertext_OFB_mode);
-
-		// clear the decode message before running decryption
-		recovered_ECB_mode.clear();
-		recovered_CBC_mode.clear();
-		recovered_CFB_mode.clear();
-		recovered_CBC_CTS_mode.clear();
-		recovered_CTR_mode.clear();
-		recovered_OFB_mode.clear();
-
-		// compute the total time Descryption
-		// CBC mode
-		total_time_decrypt_CBC_mode += CBC_DES_Decrypt(ciphertext_CBC_mode, iv, key, recovered_CBC_mode);
-
-		// CFB mode
-		total_time_decrypt_CFB_mode += CFB_DES_Decrypt(ciphertext_CFB_mode, iv, key, recovered_CFB_mode);
-
-		// CBC-CTS mode
-		total_time_decrypt_CBC_CTS_mode += CBC_CTS_DES_Decrypt(ciphertext_CBC_CTS_mode, iv, key, recovered_CBC_CTS_mode);
-
-		// ECB mode
-		total_time_decrypt_ECB_mode += ECB_DES_Decrypt(ciphertext_ECB_mode, key, recovered_ECB_mode);
-
-		// CTR mode
-		total_time_decrypt_CTR_mode += CTR_DES_Decrypt(ciphertext_CTR_mode, iv, key, recovered_CTR_mode);
-
-		// OFB mode
-		total_time_decrypt_OFB_mode += OFB_DES_Decrypt(ciphertext_OFB_mode, iv, key, recovered_OFB_mode);
-		// save the ciphertext to show for the last loop
-		if (loop == 0)
-		{
-			break;
-		}
-		ciphertext_ECB_mode.clear();
-		ciphertext_CBC_mode.clear();
-		ciphertext_CFB_mode.clear();
-		ciphertext_CBC_CTS_mode.clear();
-		ciphertext_CTR_mode.clear();
-		ciphertext_OFB_mode.clear();
-	}
-
-	// plain text
-	wcout << "Plaintext: " << wplaintext << endl
-		  << endl;
-
-	wcout << "---------- CBC Mode ----------" << endl;
-	show_result(key, iv, sizeof(iv), ciphertext_CBC_mode, recovered_CBC_mode, total_time_encrypt_CBC_mode, total_time_decrypt_CBC_mode, "CBC");
-	wcout << endl
-		  << endl;
-
-	wcout << "---------- EBC Mode ----------" << endl;
-	show_result(key, iv, sizeof(iv), ciphertext_ECB_mode, recovered_ECB_mode, total_time_encrypt_ECB_mode, total_time_decrypt_ECB_mode, "ECB");
-	wcout << endl
-		  << endl;
-
-	wcout << "---------- CBC-CTS Mode ----------" << endl;
-	show_result(key, iv, sizeof(iv), ciphertext_CBC_CTS_mode, recovered_CBC_CTS_mode, total_time_encrypt_CBC_CTS_mode, total_time_decrypt_CBC_CTS_mode, "CBC_CTS");
-	wcout << endl
-		  << endl;
-
-	wcout << "---------- CFB Mode ----------" << endl;
-	show_result(key, iv, sizeof(iv), ciphertext_CFB_mode, recovered_CFB_mode, total_time_encrypt_CFB_mode, total_time_decrypt_CFB_mode, "CFB");
-	wcout << endl
-		  << endl;
-
-	wcout << "---------- CTR Mode ----------" << endl;
-	show_result(key, iv, sizeof(iv), ciphertext_CTR_mode, recovered_CTR_mode, total_time_encrypt_CTR_mode, total_time_decrypt_CTR_mode, "CTR");
-	wcout << endl
-		  << endl;
-
-	wcout << "---------- OFB Mode ----------" << endl;
-	show_result(key, iv, sizeof(iv), ciphertext_OFB_mode, recovered_OFB_mode, total_time_encrypt_OFB_mode, total_time_decrypt_OFB_mode, "OFB");
-	wcout << endl
-		  << endl;
+	string mode_str[] = {"ECB", "CBC", "CBC CTS", "CFB", "CTR", "OFB"};
+	wcout << endl;
+	wcout << "[+] Estimation result" << endl;
+	show_result(key, iv, DES::BLOCKSIZE, ciphertext, recovered, total_time_encrypt, total_time_decrypt, mode_str[mode_option - 1]);
 	return 0;
 }

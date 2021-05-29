@@ -6,7 +6,8 @@
 #include <algorithm>
 
 using namespace std;
-
+wstring string_to_wstring(string str);
+string wstring_to_string(wstring wstr);
 // Initial Permutation Box before 16 round operation
 int Initial_Permutation[64] = {58, 50, 42, 34, 26, 18, 10, 2,
                                60, 52, 44, 36, 28, 20, 12, 4,
@@ -222,13 +223,12 @@ string Hexadecimal_to_Bin(string Hex)
 string ASCII_to_Hexadecimal(string text)
 {
     string bin = "";
-    for (long long i = 0; i < text.length(); i++)
+    for (unsigned char c : text)
     {
-        bin += Decimal_to_Bin(text[i], 8);
+        bin += Decimal_to_Bin(c, 8);
     }
     return Bin_to_Hexadecimal(bin);
 }
-
 // Convert hexadecimal number to ASCII(text)
 string Hexadecimal_to_ASCII(string Hex)
 {
@@ -236,7 +236,7 @@ string Hexadecimal_to_ASCII(string Hex)
     string ASCII = "";
     for (long long i = 0; i < Bin.length() / 8; i++)
     {
-        ASCII += Bin_to_Decimal(Bin.substr(i * 8, 8));
+        ASCII += (unsigned char)Bin_to_Decimal(Bin.substr(i * 8, 8));
     }
     return ASCII;
 }
@@ -319,6 +319,7 @@ string Encrypt_Decrypt_64bit(string _text_64_bit, vector<string> round_key)
 
     for (int i = 0; i < 16; i++)
     {
+
         // Expand the 32bit right to 48 bit
         string right_expanded = Permute(right, Expansion_D_Box, 48);
 
@@ -339,7 +340,6 @@ string Encrypt_Decrypt_64bit(string _text_64_bit, vector<string> round_key)
             // the ouput is convert to binary format
             output += Decimal_to_Bin(math_S_table, 4);
         }
-
         // straight Permutation D Box (32 bit input to 32 bit output)
         output = Permute(output, Straight_Permutaion_D_Box, 32);
 
@@ -367,7 +367,6 @@ string Encrypt_Decrypt_64bit(string _text_64_bit, vector<string> round_key)
 string GenerateKey()
 {
     string key = "";
-    srand(time(NULL));
     for (int i = 0; i < 16; i++)
     {
         key += Hex_Table[rand() % 16];
@@ -408,18 +407,25 @@ class DES
 {
 private:
     string key;
+    string iv;
 
 public:
     // Default constructor
     DES()
     {
+        // initial random seed
+        srand(time(NULL));
         key = "";
+        iv = "";
     }
 
     // Constructor
-    DES(string key_input)
+    DES(string key_input, string iv_input)
     {
+        // initial random seed
+        srand(time(NULL));
         Key_setter(key_input);
+        Iv_setter(iv_input);
     }
 
     // Destructor
@@ -428,14 +434,15 @@ public:
     }
 
     // Set the value for key
-    void Key_setter(string key_set)
+    bool Key_setter(string key_set)
     {
         if (key_set.length() != 16 || !Check_String_All_Hex(key_set))
         {
-            cout << "key set is invalid!" << endl;
-            return;
+            wcout << "key set is invalid!" << endl;
+            return false;
         }
         key = key_set;
+        return true;
     }
 
     // Get the key value
@@ -444,10 +451,30 @@ public:
         return key;
     }
 
+    //Set the iv value for key
+    bool Iv_setter(string iv_set)
+    {
+        if (iv_set.length() != 16 || !Check_String_All_Hex(iv_set))
+        {
+            wcout << "iv set is invalid!" << endl;
+            return false;
+        }
+        iv = iv_set;
+        return true;
+    }
+
+    string Iv_getter()
+    {
+        return iv;
+    }
     //random the key
     void Auto_Generate_Key()
     {
         Key_setter(GenerateKey());
+    }
+    void Auto_Generate_IV()
+    {
+        Iv_setter(GenerateKey());
     }
 
     // Encyption operation
@@ -457,7 +484,14 @@ public:
         // check key is valid
         if (key == "" || key.length() != 16)
         {
-            cout << "key is invalid!" << endl;
+            wcout << "key is invalid!" << endl;
+            exit(EXIT_FAILURE);
+        }
+
+        //check iv is valid
+        if (iv == "" || iv.length() != 16)
+        {
+            wcout << "iv is invalid!" << endl;
             exit(EXIT_FAILURE);
         }
 
@@ -479,16 +513,24 @@ public:
         string ciphertext = "";
         // Convert plaintext to Binary format
         plaintext = Hexadecimal_to_Bin(plaintext);
+        wcout << "bin: " << string_to_wstring(plaintext) << endl;
 
         // compute the round key and stored in round_key
         vector<string> round_key = Generate_Round_Key(Hexadecimal_to_Bin(key));
 
+        // reserved initial vector
+        string iv_round = Hexadecimal_to_Bin(iv);
         //split the plain text into each 64bit block then encrypt
         for (long long i = 0; i < plaintext.length() / 64; i++)
         {
             string _text_64_bit = plaintext.substr(i * 64, 64);
+            _text_64_bit = Xor(_text_64_bit, iv_round);
+
             // encrypt 64 bit and concatenate to the ciphertext
-            ciphertext += Encrypt_Decrypt_64bit(_text_64_bit, round_key);
+            string _64_bit_ciphertext;
+            _64_bit_ciphertext = Encrypt_Decrypt_64bit(_text_64_bit, round_key);
+            ciphertext += _64_bit_ciphertext;
+            iv_round = Hexadecimal_to_Bin(_64_bit_ciphertext);
         }
 
         return ciphertext;
@@ -506,14 +548,17 @@ public:
         // Reverse round_key for decrypt operation
         reverse(round_key.begin(), round_key.end());
 
+        string iv_round = Hexadecimal_to_Bin(iv);
         // split ciphertext into 64bit block then decrypt
+
         for (long long i = 0; i < ciphertext.length() / 64; i++)
         {
             string plaintext_64_bit = ciphertext.substr(i * 64, 64);
             // decrypt 64 bit and concatenate to the recoverd_plaintext
-            recovered_plaintext += Encrypt_Decrypt_64bit(plaintext_64_bit, round_key);
+            string _64_bit_recovered = Hexadecimal_to_Bin(Encrypt_Decrypt_64bit(plaintext_64_bit, round_key));
+            recovered_plaintext += Bin_to_Hexadecimal(Xor(iv_round, _64_bit_recovered));
+            iv_round = plaintext_64_bit;
         }
-
         return recovered_plaintext;
     }
 };

@@ -7,7 +7,8 @@
 #include <bitset>
 
 using namespace std;
-
+wstring string_to_wstring(string str);
+string wstring_to_string(wstring wstr);
 //Substitution box for encryption and key expansion
 int Substitution_Box[16][16] = {{0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76},
                                 {0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0},
@@ -189,9 +190,9 @@ string Hexadecimal_to_Bin(string Hex)
 string ASCII_to_Hexadecimal(string text)
 {
     string bin = "";
-    for (long long i = 0; i < text.length(); i++)
+    for (unsigned char c : text)
     {
-        bin += Decimal_to_Bin(text[i], 8);
+        bin += Decimal_to_Bin(c, 8);
     }
     return Bin_to_Hexadecimal(bin);
 }
@@ -203,7 +204,8 @@ string Hexadecimal_to_ASCII(string Hex)
     string ASCII = "";
     for (long long i = 0; i < Bin.length() / 8; i++)
     {
-        ASCII += Bin_to_Decimal(Bin.substr(i * 8, 8));
+        int c = Bin_to_Decimal(Bin.substr(i * 8, 8));
+        ASCII += (char)c;
     }
     return ASCII;
 }
@@ -500,7 +502,6 @@ string Xor_row_by_row(string str1, string str2)
 // Encrypt 128 bit length
 string Encrypt_128(string plain_128, string key)
 {
-
     string Key_Expanded[10];
 
     // compute the key_expanded from specific key
@@ -544,7 +545,7 @@ string Decrypt_128(string cipher_128, string key)
 {
     string Key_Expanded[10];
 
-    // ompute key_expanded from specific key
+    // compute key_expanded from specific key
     Key_Expansion(key, Key_Expanded);
 
     // 10 rouds for AES oepration
@@ -584,7 +585,7 @@ string Decrypt_128(string cipher_128, string key)
 string GenerateKey()
 {
     string key = "";
-    srand(time(NULL));
+
     for (int i = 0; i < 32; i++)
     {
         key += Hex_Table[rand() % 16];
@@ -596,12 +597,15 @@ class AES
 {
 private:
     string key;
+    string iv;
 
 public:
     // Default constructor
     AES()
     {
+        srand(time(NULL));
         key = "";
+        iv = "";
     }
 
     // Destructor
@@ -610,9 +614,11 @@ public:
     }
 
     // Constructor
-    AES(string key_input)
+    AES(string key_input, string iv_input)
     {
+        srand(time(NULL));
         Key_setter(key_input);
+        Iv_setter(iv_input);
     }
 
     // Auto generate key
@@ -621,16 +627,21 @@ public:
         Key_setter(GenerateKey());
     }
 
+    void Auto_Generate_Iv()
+    {
+        Iv_setter(GenerateKey());
+    }
     // set the value for key in hexadecimal
-    void Key_setter(string key_input)
+    bool Key_setter(string key_input)
     {
         if (key_input.length() != 32 || !Check_String_All_Hex(key_input))
         {
-            cout << "Key input is invalid!" << endl;
-            return;
+            wcout << "Key input is invalid!" << endl;
+            return false;
         }
 
         key = key_input;
+        return true;
     }
 
     // get the value of key
@@ -639,13 +650,38 @@ public:
         return key;
     }
 
+    // set the value for key in hexadecimal
+    bool Iv_setter(string iv_input)
+    {
+        if (iv_input.length() != 32 || !Check_String_All_Hex(iv_input))
+        {
+            wcout << "Iv input is invalid!" << endl;
+            return false;
+        }
+
+        iv = iv_input;
+        return true;
+    }
+
+    // get the value of iv
+    string Iv_getter()
+    {
+        return iv;
+    }
+
     // Encryption full plaintext
     string Encryption(string plaintext)
     {
         // check key is valid
         if (key == "" || key.length() != 32)
         {
-            cout << "key is invalid!" << endl;
+            wcout << "key is invalid!" << endl;
+            exit(EXIT_FAILURE);
+        }
+        // check iv is valid
+        if (iv == "" || iv.length() != 32)
+        {
+            wcout << "iv is invalid!" << endl;
             exit(EXIT_FAILURE);
         }
 
@@ -668,12 +704,18 @@ public:
         // convert plaintext to binary
         plaintext = Hexadecimal_to_Bin(plaintext);
 
+        // reserved iv
+        string iv_round = Hexadecimal_to_Bin(iv);
         // Split plaintext into each 128 bits length the encrypt
         for (long long i = 0; i < plaintext.length() / 128; i++)
         {
-            string _text_64_bit = plaintext.substr(i * 128, 128);
+            string _text_128_bit = plaintext.substr(i * 128, 128);
+            _text_128_bit = Xor(_text_128_bit, iv_round);
             // Encrypt 128 bits length the Concatenate to ciphertext
-            ciphertext += Encrypt_128(_text_64_bit, key);
+            string _128_bit_ciphertext;
+            _128_bit_ciphertext = Encrypt_128(_text_128_bit, key);
+            ciphertext += _128_bit_ciphertext;
+            iv_round = _128_bit_ciphertext;
         }
 
         // return ciphertext in hexadecimal format
@@ -686,7 +728,7 @@ public:
         // check key is valid
         if (key == "" || key.length() != 32)
         {
-            cout << "Key is invalid!" << endl;
+            wcout << "Key is invalid!" << endl;
             exit(EXIT_FAILURE);
         }
 
@@ -695,12 +737,17 @@ public:
         // convert ciphertext to binary
         ciphertext = Hexadecimal_to_Bin(ciphertext);
 
+        // reserved iv
+        string iv_round = Hexadecimal_to_Bin(iv);
+
         // split ciphertext into each 128 bits length then decrypt
         for (long long i = 0; i < ciphertext.length() / 128; i++)
         {
             string plaintext_64_bit = ciphertext.substr(i * 128, 128);
             // decrypt 128 bits length the concatenate to recorverd_plaintext
-            recovered_plaintext += Decrypt_128(plaintext_64_bit, key);
+            string _64_bit_recovered = Decrypt_128(plaintext_64_bit, key);
+            recovered_plaintext += Xor(_64_bit_recovered, iv_round);
+            iv_round = plaintext_64_bit;
         }
 
         // return recovered_plaintext in Hexadecimal format
