@@ -14,7 +14,6 @@ Required:
 
   - Select mode from screen (using switch case)
   - Support modes:  ECB, CBC, OFB, CFB, CTR, XTS, CCM, GCM.
-  - 
 +) Secret key and Initialization Vector (IV) select from screen (using switch case)
 
   Case 1: Secret key and IV are randomly chosen for each run time using random generator using CryptoPP::AutoSeededRandomPool;
@@ -25,11 +24,9 @@ Required:
   
  +) OS platform
   - Your code can compile on both Windows and Linux;
-  - 
 +) Performance
 
   - Report your hardware resources
-  - 
   - Report computation performance for all operations on both Windows and Linux 
 
 [Performance](Lab01/README.md)
