@@ -16,7 +16,7 @@ OS Name	Microsoft Windows 10 Home Single Language
 Version	10.0.19042 Build 19042
 
 ## Thống kê
-| Scheme | Operation Mode | Key Length | Iv Length | Total Encryption Time (Windows) | Total Decryption time (Windows) | Total Encryption Time (Linux) |Total Decryption time (Linux) |
+| Scheme | Operation Mode | Key Length | Iv Length | Total Encryption Time ms (Windows) | Total Decryption Time ms (Windows) | Total Encryption Time ms (Linux) |Total Decryption Time ms (Linux) |
 | ------    | -------------- | ---------- | ---------- | --------------------- | ----------------------- | -------------------- | ---------------------- |
 | DES | CBC |64 |64 |123 |96 | | |
 | DES | EBC | 64| 64| 114|105 | ||
@@ -28,7 +28,7 @@ Version	10.0.19042 Build 19042
 | AES | CBC | 192|128 | 40|22 | | |
 | AES | CBC | 256| 128| 38|29 | | |
 | AES | EBC | 128| n.a| 27|18 | | |
-| AES | EBC | 192| n.a| | 29|16 | |
+| AES | EBC | 192| n.a|29 | 16| | |
 | AES | EBC | 256| n.a| 35|19 | | |
 | AES | CBC CTS|128 | 128| 37|23 | | |
 | AES | CBC CTS|192 | 128|38 |23 | | |
