@@ -887,7 +887,6 @@ double CCM_AES_Decrypt(string cipher, byte *iv, SecByteBlock key, string &recove
         assert(enc.size() == plain.size());
         assert(mac.size() == TAG_SIZE);
 
-
         AuthenticatedDecryptionFilter df(d, NULL,
                                          AuthenticatedDecryptionFilter::MAC_AT_BEGIN |
                                              AuthenticatedDecryptionFilter::THROW_EXCEPTION,
@@ -1094,6 +1093,7 @@ double Estimation_En_De_cypt_Operation(string &plain, byte *iv, SecByteBlock key
             {
                 total_time += OFB_AES_Decrypt(cipher, iv, key, plain);
             }
+            break;
         case 7:
             //XTS mode
             if (!is_decryption)
@@ -1304,14 +1304,14 @@ byte *input_iv_from_keyboard(int iv_length)
     }
     return iv;
 }
-int selection_iv_length_authentication_mode(int min, int max)
+long selection_iv_length_authentication_mode(int min, long long max)
 {
     do
     {
 
         wcout << "\n[+] IV selection for authentication mode:\n";
         wcout << "Enter a iv length in range (" << min << "-" << max << "): ";
-        int length = 0;
+        long length = 0;
         wcin >> length;
         if (length <= min && length > max)
         {
@@ -1323,7 +1323,7 @@ int selection_iv_length_authentication_mode(int min, int max)
         }
     } while (1);
 }
-byte *iv_selection(int mode, int &iv_length)
+byte *iv_selection(int mode, unsigned int &iv_length)
 {
     byte *iv;
     int option_input_iv = 0;
@@ -1448,7 +1448,7 @@ int main(int argc, char *argv[])
 
     key = key_selection(mode_option);
 
-    int iv_length = 16;
+    unsigned int iv_length = 16;
     // not set iv for ECB mode
     if (mode_option != 1)
     {
@@ -1472,7 +1472,6 @@ int main(int argc, char *argv[])
         // convert wstring(utf8) to string
         adata = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(w_adata);
     }
-
 
     // convert input in utf16 to string
     string plaintext = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(wplaintext);
