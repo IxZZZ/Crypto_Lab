@@ -16,26 +16,26 @@ OS Name	Microsoft Windows 10 Home Single Language
 Version	10.0.19042 Build 19042
 
 ## Thống kê
-| Scheme | Operation Mode | Key Length | Iv Length | Total Encryption time | Average Encryption time | Total Decryption time | Average Decryption Time |
+| Scheme | Operation Mode | Key Length | Iv Length | Total Encryption Time (Windows) | Total Decryption time (Windows) | Total Encryption Time (Linux) |Total Decryption time (Linux) |
 | ------    | -------------- | ---------- | ---------- | --------------------- | ----------------------- | -------------------- | ---------------------- |
-| DES | CBC | | | | | | |
-| DES | EBC | | | | | | |
-| DES | CBC CTS | | | | | | |
-| DES | CFB | | | | | | |
-| DES | CTR | | | | | | |
-| DES | OFB | | | | | | |
-| AES | CBC | | | | | | |
-| AES | CBC | | | | | | |
-| AES |     | | | | | | |
-| AES | CBC | | | | | | |
-| AES | CBC | | | | | | |
-| AES | CBC | | | | | | |
-| AES | CBC | | | | | | |
-| AES | CBC | | | | | | |
-| AES | CBC | | | | | | |
-| AES | CBC | | | | | | |
-| AES | CBC | | | | | | |
-| AES | CBC | | | | | | |
+| DES | CBC |64 |64 |123 |96 | | |
+| DES | EBC | 64| 64| 114|105 | ||
+| DES | CBC CTS |64 | 64|131 |101 || |
+| DES | CFB | 64|64 | 131|101 | | |
+| DES | CTR |64 | 64| 124|112 | | |
+| DES | OFB | 64| 64| 122|107 | | |
+| AES | CBC |128 |128 |38 |21 | | |
+| AES | CBC | 192|128 | 40|22 | | |
+| AES | CBC | 256| 128| 38|29 | | |
+| AES | EBC | 128| n.a| 27|18 | | |
+| AES | EBC | 192| n.a| | 29|16 | |
+| AES | EBC | 256| n.a| 35|19 | | |
+| AES | CBC CTS| | 128| | | | |
+| AES | CBC CTS| | 128| 128| | | |
+| AES | CBC CTS| |128 |128 | | | |
+| AES | CBC | | 128| 128| | | |
+| AES | CBC | | 128| 128| | | |
+| AES | CBC | | 128|128 | | | |
 
 ### DES with cryptopp library
 
