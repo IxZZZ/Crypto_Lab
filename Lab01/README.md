@@ -15,6 +15,28 @@ OS Name	Microsoft Windows 10 Home Single Language
 
 Version	10.0.19042 Build 19042
 
+## Thống kê
+| Scheme | Operation Mode | Key Length | Iv Length          |    Total Encryption time             | Average Encryption time| Total Decryption time| Average Decryption Time|
+| ------ | --------------------------- | ------------------------------- |------|------|------|------|------|
+| DES     | CBC | bof                             |
+| DES     | EBC | bof                             |
+| DES     | CBC CTS | bof, rop, ret2win               |
+| DES     | CFB | bof                             |
+| DES     | CTR | bof                             |
+| DES     | OFB | bof, rop, shellcode             |
+| AES     | [speedrun-06](#speedrun-06) | bof, shellcode                  |
+| AES     | [speedrun-07](#speedrun-07) | shellcode                       |
+| AES     | [speedrun-09](#speedrun-09) | rev, crypto                     |
+| AES     | [speedrun-10](#speedrun-10) | bof, rop                        |
+| AES     | [speedrun-08](#speedrun-08) | write-what-where, got-overwrite |
+| AES     | [speedrun-11](#speedrun-11) | format-string, got-overwrite    |
+| AES     | [speedrun-13](#speedrun-13) | bof, rop                        |
+| AES     | [speedrun-16](#speedrun-16) | rev                             |
+| AES     | [speedrun-12](#speedrun-12) | format-string, got-overwrite    |
+| AES     | [speedrun-15](#speedrun-15) | bof, rop, shellcode             |
+| AES     | [speedrun-17](#speedrun-17) | rev, rand                       |
+| AES     | [speedrun-14](#speedrun-14) | bof, rop                        |
+
 ### DES with cryptopp library
 
 #### CBC operation mode
