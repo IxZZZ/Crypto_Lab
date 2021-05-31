@@ -15,7 +15,7 @@ OS Name	Microsoft Windows 10 Home Single Language
 
 Version	10.0.19042 Build 19042
 
-## Thống kê
+## Thống kê (10000 vòng lặp)
 | Scheme | Operation Mode | Key Length | Iv Length | Total Encryption Time ms (Windows) | Total Decryption Time ms (Windows) | Total Encryption Time ms (Linux) |Total Decryption Time ms (Linux) |
 | ------    | -------------- | ---------- | ---------- | --------------------- | ----------------------- | -------------------- | ---------------------- |
 | DES | CBC |64 |64 |123 |96 |107.87 |100.685 |
