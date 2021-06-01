@@ -17,6 +17,7 @@ using CryptoPP::AutoSeededRandomPool;
 #include <io.h>
 #include <fcntl.h>
 #else
+#include <stdio_ext.h> // _fpurge(stdin) == fflush(stdin)
 #endif
 
 #include <string>
@@ -1479,7 +1480,12 @@ int main(int argc, char *argv[])
     {
 
         wcout << "\n[+] Enter authentication data: ";
+#ifdef __linux__
+        __fpurge(stdin);
+#elif _WIN32
         fflush(stdin);
+#else
+#endif
         std::getline(wcin, w_adata);
 
         // convert wstring(utf8) to string
