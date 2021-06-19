@@ -79,6 +79,7 @@ Required:
   - Report your hardware resources
   
   - Report computation performance for all operations on both Windows and Linux 
+  
   [Performance](Lab03/README.md)
   
   # Lab04
@@ -117,4 +118,5 @@ Required:
   - Report your hardware resources
   
   - Report computation performance for all operations on both Windows and Linux
+  
   [Performance](Lab04/README.md)
