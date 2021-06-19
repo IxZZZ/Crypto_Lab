@@ -3,7 +3,7 @@
 
 #include <assert.h>
 #include <ctime>
-
+#include <stdio.h>
 #include <iostream>
 using std::endl;
 using std::wcout;
@@ -56,6 +56,7 @@ using CryptoPP::OID;
 #include <io.h>
 #include <fcntl.h>
 #else
+#include <stdio_ext.h> // _fpurge(stdin) == fflush(stdin)
 #endif
 
 /* String convert */
@@ -332,7 +333,14 @@ string Input_Message()
         {
             wcout << "Enter file name: ";
             wstring filename;
+
+#ifdef __linux__
+            __fpurge(stdin);
+#elif _WIN32
             fflush(stdin);
+#else
+#endif
+
             getline(wcin, filename);
             std::ifstream file;
             file.open((wstring_to_string(filename)));
@@ -342,7 +350,14 @@ string Input_Message()
                 continue;
             }
             string message;
+
+#ifdef __linux__
+            __fpurge(stdin);
+#elif _WIN32
             fflush(stdin);
+#else
+#endif
+
             getline(file, message);
             return message;
         }
@@ -350,7 +365,14 @@ string Input_Message()
         {
             wstring message;
             wcout << "Enter Message: ";
+
+#ifdef __linux__
+            __fpurge(stdin);
+#elif _WIN32
             fflush(stdin);
+#else
+#endif
+
             getline(wcin, message);
             return wstring_to_string(message);
         }
@@ -377,7 +399,14 @@ string Input_Signature()
         {
             wcout << "Enter file name: ";
             wstring filename;
+
+#ifdef __linux__
+            __fpurge(stdin);
+#elif _WIN32
             fflush(stdin);
+#else
+#endif
+
             getline(wcin, filename);
             std::ifstream file;
             file.open((wstring_to_string(filename)));
@@ -387,7 +416,14 @@ string Input_Signature()
                 continue;
             }
             string signature;
+
+#ifdef __linux__
+            __fpurge(stdin);
+#elif _WIN32
             fflush(stdin);
+#else
+#endif
+
             getline(file, signature);
             return signature;
         }
@@ -395,7 +431,14 @@ string Input_Signature()
         {
             wstring signature;
             wcout << "Enter Signature: ";
+
+#ifdef __linux__
+            __fpurge(stdin);
+#elif _WIN32
             fflush(stdin);
+#else
+#endif
+
             getline(wcin, signature);
             return wstring_hex_to_string(signature);
         }
@@ -475,33 +518,40 @@ void Verify()
     signature = Input_Signature();
 
     wcout << "Input the file name of public key: ";
-    wstring key_filename;
-    fflush(stdin);
-    getline(wcin, key_filename);
+   
 
-    // Load key in PKCS#9 and X.509 format
-    LoadPublicKey(wstring_to_string(key_filename), publicKey);
+#ifdef __linux__
+        __fpurge(stdin);
+#elif _WIN32
+        fflush(stdin);
+#else
+#endif
+        wstring key_filename;
+        getline(wcin, key_filename);
 
-    wcout << "Message: " << string_to_wstring(message) << endl;
+        // Load key in PKCS#9 and X.509 format
+        LoadPublicKey(wstring_to_string(key_filename), publicKey);
 
-    string hex_signature;
+        wcout << "Message: " << string_to_wstring(message) << endl;
 
-    StringSource(signature, true, new HexEncoder(new StringSink(hex_signature)));
+        string hex_signature;
 
-    wcout << "Signature(hex): " << string_to_wstring(hex_signature) << endl;
+        StringSource(signature, true, new HexEncoder(new StringSink(hex_signature)));
 
-    PrintPublicKey(publicKey);
+        wcout << "Signature(hex): " << string_to_wstring(hex_signature) << endl;
 
-    int loop = 10000;
-    bool result;
-    int start_s = clock();
-    while (loop--)
-    {
-        result = VerifyMessage(publicKey, message, signature);
-        if (result == false)
+        PrintPublicKey(publicKey);
+
+        int loop = 10000;
+        bool result;
+        int start_s = clock();
+        while (loop--)
         {
-            break;
-        }
+            result = VerifyMessage(publicKey, message, signature);
+            if (result == false)
+            {
+                break;
+            }
     }
     int stop_s = clock();
     double etime = (stop_s - start_s) / double(CLOCKS_PER_SEC) * 1000;
@@ -535,7 +585,14 @@ void Input_PrivateKey(ECDSA<ECP, SHA1>::PrivateKey &key)
         {
             wcout << "Input the file name of private key: ";
             wstring key_filename;
+
+#ifdef __linux__
+            __fpurge(stdin);
+#elif _WIN32
             fflush(stdin);
+#else
+#endif
+
             getline(wcin, key_filename);
 
             // Load key in PKCS#9 and X.509 format
@@ -551,7 +608,14 @@ void Input_PrivateKey(ECDSA<ECP, SHA1>::PrivateKey &key)
                 wcout << "Successfully generate key!\n";
                 wcout << "Input the file name to save private key: ";
                 wstring key_filename;
+
+#ifdef __linux__
+                __fpurge(stdin);
+#elif _WIN32
                 fflush(stdin);
+#else
+#endif
+
                 getline(wcin, key_filename);
 
                 // Save key in PKCS#9 and X.509 format
@@ -565,7 +629,14 @@ void Input_PrivateKey(ECDSA<ECP, SHA1>::PrivateKey &key)
 
                     wcout << "Input the file name to save public key: ";
                     key_filename.clear();
+
+#ifdef __linux__
+                    __fpurge(stdin);
+#elif _WIN32
                     fflush(stdin);
+#else
+#endif
+
                     getline(wcin, key_filename);
 
                     SavePublicKey(wstring_to_string(key_filename), publicKey);

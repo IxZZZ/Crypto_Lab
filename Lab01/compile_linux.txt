@@ -1,2 +1,2 @@
-g++ -g2 -O3 -DNDEBUG AES_with_lib.cpp -o AES_linux -pthread -Llib -Iinclude -l:libcryptopp.a -Wall
-g++ -g2 -O3 -DNDEBUG DES_with_lib.cpp -o DES_linux -pthread -Llib -Iinclude -l:libcryptopp.a -Wall
+g++ -g2 -O3 -DNDEBUG AES_with_lib.cpp -o AES_linux -pthread -Llib_linux -Iinclude_linux -l:libcryptopp.a -Wall
+g++ -g2 -O3 -DNDEBUG DES_with_lib.cpp -o DES_linux -pthread -Llib_linux -Iinclude_linux -l:libcryptopp.a -Wall

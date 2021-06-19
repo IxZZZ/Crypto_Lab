@@ -67,6 +67,7 @@ using CryptoPP::HexEncoder;
 #include <io.h>
 #include <fcntl.h>
 #else
+#include <stdio_ext.h> // _fpurge(stdin) == fflush(stdin)
 #endif
 
 /* String convert */
@@ -231,8 +232,17 @@ void Print_Option(int section)
 Integer Input_Integer_From_KeyBoard(wstring type)
 {
     wcout << "Enter " << type << ": ";
-    fflush(stdin);
+    
+    #ifdef __linux__
+        __fpurge(stdin);
+#elif _WIN32
+        fflush(stdin);
+#else
+#endif
+
     wstring input;
+    
+    
     getline(wcin, input);
 
     Integer integer(string_to_char_array(wstring_to_string(input)));
@@ -465,7 +475,14 @@ bool Input_str(string &plaintext, wstring type, int option)
         wcout << endl;
         wcout << "[+] Enter " << type << " from file:\n";
         wcout << "Enter " << type << " file name: ";
+        
+        #ifdef __linux__
+        __fpurge(stdin);
+#elif _WIN32
         fflush(stdin);
+#else
+#endif
+
         wstring filename_wstr;
         getline(wcin, filename_wstr);
         string filename = wstring_to_string(filename_wstr);
@@ -498,7 +515,14 @@ bool Input_str(string &plaintext, wstring type, int option)
         wcout << "Enter " << type << ": ";
         wstring w_plaintext;
         w_plaintext.clear();
+        
+        #ifdef __linux__
+        __fpurge(stdin);
+#elif _WIN32
         fflush(stdin);
+#else
+#endif
+
         getline(wcin, w_plaintext);
         if (wstring_to_string(type) == "ciphertext")
         {

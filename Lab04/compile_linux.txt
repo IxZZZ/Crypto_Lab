@@ -1,0 +1,1 @@
+g++ -g2 -O3 -DNDEBUG ECDSA.cpp -o ECDSA -pthread -Llib_linux -Iinclude_linux -l:libcryptopp.a -Wall
