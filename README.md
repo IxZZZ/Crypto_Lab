@@ -45,3 +45,78 @@ Required:
 +) Secret key and Initialization Vector (IV)
 
      Input Secret Key and IV from screen
+
+# Lab03 
+
+Code RSA Cipher (Encryption/Decryption) using CryptoPP
+
+Required:
+
++) Separation Encryption function and Decryption function (using switch case)
+
++) Plaintext:
+
+    - Support Vietnamese (UTF-16)
+    
+    - Input from screen or from file (using switch case)
+    
++) Cyphertext:
+
+    - Input from screen or from file (using switch case)
+    
++) Secret key/public key
+
+    - The keys load from files (for both two functions)
+    
+    - The public key: >= 3072 bits
+    
+ +) OS platforms
+ 
+  - Your code can compile on both Windows and Linux
+  
++) Performance
+
+  - Report your hardware resources
+  
+  - Report computation performance for all operations on both Windows and Linux 
+  
+  [Performance](Lab03/README.md)
+  
+  # Lab04
+  
+  Code ECC-based Digital signature with CryptoPP
+  
+  Required:
+  
++) Algorithm: ECDSA
+
++) Separation the signing function and the verify function (using switch case)
+
++) signing function; verify function
+
+    - May adopt from library or direct compute from formulas. Deploy directly from formulas will get 10/100 bonus points. 
+    
++) Message to sign: 
+
+    - Input from file
+    
+    - Support Vietnamese (using UTF-16)
+    
++) ECC curve:  should select from standard curves
+
++) Secret key/public key
+
+    - The keys load from files (for both two functions)
+    
+    - The public key: >= 256 bits
++) OS platforms
+
+  - Your code can compile on both Windows and Linux
+
++) Performance
+
+  - Report your hardware resources
+  
+  - Report computation performance for all operations on both Windows and Linux
+  
+  [Performance](Lab04/README.md)
