@@ -8,21 +8,14 @@ using std::wcout;
 using std::wstring;
 
 /* Vietnamese support */
-
 /* Set _setmode()*/
 #ifdef _WIN32
 #include <io.h>
 #include <fcntl.h>
 #else
-
-#ifdef __linux__
-__fpurge(stdin);
-#elif _WIN32
-fflush(stdin);
-#else
+#include <stdio_ext.h> // _fpurge(stdin) == fflush(stdin)
 #endif
 
-#endif
 
 /* String convert */
 #include <locale>
