@@ -147,12 +147,15 @@ SHA224, SHA256, SHA384, SHA512, SHA3-224, SHA3-256, SHA3-384, SHA3-512, SHAKE128
 +) Performance
 
 [Perfomance](Lab05/README.md)
+
   - Report your hardware resources
   
   - Report computation performance for all operations on both Windows and Linux 
 
 # Lab06 
+
 [Report](Lab06/README.md)
+
 Required:
 
 6.1 MD5 collision attacks
