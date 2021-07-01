@@ -19,26 +19,26 @@ Version	10.0.19042 Build 19042
 
 | Scheme | Operation | Platform |Total excecution time (ms) | Average execution time (ms) |
 | ------ | --------- | -------- |--------------------- | ---------------------- |
-| Hash    | SHA224| Windows  | 802 | 0.0802 |
-| Hash    | SHA224| Linux    | 734.207 |  0.0734207 |
-| Hash    | SHA256| Windows  | 72860 | 7.286 |
-| Hash    | SHA256| Linux    | 72542 |  7.2542 |
-| Hash    | SHA384| Windows  | 72860 | 7.286 |
-| Hash    | SHA384| Linux    | 72542 |  7.2542 |
-| Hash    | SHA512| Windows  | 72860 | 7.286 |
-| Hash    | SHA512| Linux    | 72542 |  7.2542 |
-| Hash    | SHA3-224| Windows  | 72860 | 7.286 |
-| Hash    | SHA3-224| Linux    | 72542 |  7.2542 |
-| Hash    | SHA3-256| Windows  | 72860 | 7.286 |
-| Hash    | SHA3-256| Linux    | 72542 |  7.2542 |
-| Hash    | SHA3-384| Windows  | 72860 | 7.286 |
-| Hash    | SHA3-384| Linux    | 72542 |  7.2542 |
-| Hash    | SHA3-512| Windows  | 72860 | 7.286 |
-| Hash    | SHA3-512| Linux    | 72542 |  7.2542 |
-| Hash    | SHAKE128| Windows  | 72860 | 7.286 |
-| Hash    | SHAKE128| Linux    | 72542 |  7.2542 |
-| Hash    | SHAKE256| Windows  | 72860 | 7.286 |
-| Hash    | SHAKE256| Linux    | 72542 |  7.2542 |
+| Hash    | SHA224| Windows  | 17 | 0.0017 |
+| Hash    | SHA224| Linux    | 12.128 |  0.0012128 |
+| Hash    | SHA256| Windows  | 17 | 0.0017 |
+| Hash    | SHA256| Linux    | 12.157 |  0.0012157|
+| Hash    | SHA384| Windows  | 16 | 0.0016 |
+| Hash    | SHA384| Linux    | 10.751 |  0.0010751 |
+| Hash    | SHA512| Windows  | 14 | 0.0014 |
+| Hash    | SHA512| Linux    | 10.689 |  0.0010689 |
+| Hash    | SHA3-224| Windows  | 23 |  0.0023|
+| Hash    | SHA3-224| Linux    | 12.755 |  0.0012755|
+| Hash    | SHA3-256| Windows  | 16 | 0.0016|
+| Hash    | SHA3-256| Linux    | 12.868 |  0.0012968 |
+| Hash    | SHA3-384| Windows  | 22 | 0.0022 |
+| Hash    | SHA3-384| Linux    | 19.095 |  0.0019095 |
+| Hash    | SHA3-512| Windows  | 27 | 0.0027 |
+| Hash    | SHA3-512| Linux    | 17.793 | 0.0017793 |
+| Hash    | SHAKE128 (1000 ouput length)| Windows  | 54 | 0.0054 |
+| Hash    | SHAKE128| Linux (1000 ouput length) | 38.141 |  0.0038141 |
+| Hash    | SHAKE256| Windows (1000 ouput length) | 56 | 0.0056 |
+| Hash    | SHAKE256| Linux (1000 ouput length)   | 48.816 |  0.0048816 |
 
 
 ### SHA224
