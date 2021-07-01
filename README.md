@@ -120,3 +120,64 @@ Required:
   - Report computation performance for all operations on both Windows and Linux
   
   [Performance](Lab04/README.md)
+
+
+# Lab05
+
+Required:
+
++) Separation all hash functions using switch case:
+
+SHA224, SHA256, SHA384, SHA512, SHA3-224, SHA3-256, SHA3-384, SHA3-512, SHAKE128,SHAKE256 
+
++) Plaintext:
+
+    - Support Vietnamese (UTF-16)
+    
+    - Input from screen or from file (using switch case)
++) Digest:
+
+    - may choose digest output length d for SHAKE128,SHAKE256 from screen;
+    
+    - digest should be encoded as hex string;
++) OS platforms
+
+  - Your code can compile on both Windows and Linux;
+  
++) Performance
+
+[Perfomance](Lab05/README.md)
+  - Report your hardware resources
+  
+  - Report computation performance for all operations on both Windows and Linux 
+
+# Lab06 
+[Report](Lab06/README.md)
+Required:
+
+6.1 MD5 collision attacks
+
++) Two collision messages have the same prefix string
+
+ - Generate yourself prefix string
+ 
+ - Compute the two output files that have the same MD5 digest (using hashclash tool)
+ 
++) Two different C++ programs but have the same MD5;
+
+ - Code yourself two short C++ programs
+ 
+ - Compiler your codes code1, code2
+ 
+ - Run hashclash to generate two program with the same MD5 digest
+ 
+Note: It takes long time to generate the output.
+
+6.2 Length extension attacks on MAC using SHA256 in form: SHA256(k||m), k is secret key
+
+ - This one for bonus 10/100 points (does not require all students)
+ 
++) Coding self programs that can
+ - Automatic compute the padded part for any input (k||m);
+ 
+ - Compute the digest using length extension attacks with any extend string;
