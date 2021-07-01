@@ -36,9 +36,9 @@ Version	10.0.19042 Build 19042
 | Hash    | SHA3-512| Windows  | 27 | 0.0027 |
 | Hash    | SHA3-512| Linux    | 17.793 | 0.0017793 |
 | Hash    | SHAKE128 (1000 ouput length)| Windows  | 54 | 0.0054 |
-| Hash    | SHAKE128| Linux (1000 ouput length) | 38.141 |  0.0038141 |
-| Hash    | SHAKE256| Windows (1000 ouput length) | 56 | 0.0056 |
-| Hash    | SHAKE256| Linux (1000 ouput length)   | 48.816 |  0.0048816 |
+| Hash    | SHAKE128 (1000 ouput length)| Linux | 38.141 |  0.0038141 |
+| Hash    | SHAKE256 (1000 ouput length)| Windows  | 56 | 0.0056 |
+| Hash    | SHAKE256 (1000 ouput length) | Linux   | 48.816 |  0.0048816 |
 
 
 ### SHA224
